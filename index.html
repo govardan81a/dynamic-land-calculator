@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="kn" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Land Area & Bhoomi RTC Calculator | ಡೈನಾಮಿಕ್ ಜಮೀನಿನ ವಿಸ್ತೀರ್ಣ ಲೆಕ್ಕಾಚಾರ</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Noto Sans Kannada -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Kannada:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans Kannada', 'sans-serif'],
+            kannada: ['Noto Sans Kannada', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+              950: '#022c22'
+            },
+            accent: {
+              500: '#f59e0b',
+              600: '#d97706'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', 'Noto Sans Kannada', sans-serif;
+    }
+    .kannada-text {
+      font-family: 'Noto Sans Kannada', sans-serif;
+    }
+    /* Smooth glass effect */
+    .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .light .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    /* Pulse glow */
+    .glow-accent {
+      box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.4);
+    }
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
+      .glass-card {
+        background: white !important;
+        border: 1px solid #ccc !important;
+        box-shadow: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen transition-colors duration-200">
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-md no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white font-black text-xl">
+          🌾
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-bold text-lg text-slate-100 tracking-tight" data-en="Bhoomi RTC & Land Calculator" data-kn="ಭೂಮಿ RTC & ಜಮೀನಿನ ಲೆಕ್ಕಾಚಾರ">ಭೂಮಿ RTC & ಜಮೀನಿನ ಲೆಕ್ಕಾಚಾರ</span>
+            <span class="px-2 py-0.5 text-xs font-semibold uppercase tracking-wider rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Pro 2026</span>
+          </div>
+          <p class="text-xs text-slate-400 font-medium" data-en="Dynamic Live Area Converter & Family Partition Ledger" data-kn="ಲೈವ್ ವಿಸ್ತೀರ್ಣ ಪರಿವರ್ತಕ & ಕುಟುಂಬದ ಪಾಲು ಹಂಚಿಕೆ">ಲೈವ್ ವಿಸ್ತೀರ್ಣ ಪರಿವರ್ತಕ & ಕುಟುಂಬದ ಪಾಲು ಹಂಚಿಕೆ</p>
+        </div>
+      </div>
+
+      <!-- Actions & Toggles -->
+      <div class="flex items-center space-x-3">
+        
+        <!-- Quick Share to WhatsApp -->
+        <button onclick="shareToWhatsApp()" class="hidden sm:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600/30 text-xs font-semibold transition">
+          <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+          <span data-en="WhatsApp Share" data-kn="ವಾಟ್ಸಾಪ್ ಶೇರ್">ವಾಟ್ಸಾಪ್ ಶೇರ್</span>
+        </button>
+
+        <!-- Language Switcher -->
+        <button id="langToggleBtn" onclick="toggleLanguage()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 text-slate-200 border border-slate-700 hover:bg-slate-700 text-xs font-semibold transition">
+          <i data-lucide="languages" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span id="langText">English</span>
+        </button>
+
+        <!-- Print / PDF -->
+        <button onclick="window.print()" class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 text-slate-200 border border-slate-700 hover:bg-slate-700 text-xs font-semibold transition">
+          <i data-lucide="printer" class="w-3.5 h-3.5 text-blue-400"></i>
+          <span data-en="Print / PDF" data-kn="ಮುದ್ರಣ / PDF">ಮುದ್ರಣ / PDF</span>
+        </button>
+
+        <!-- Dark / Light Mode -->
+        <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+          <i id="themeIcon" data-lucide="sun" class="w-4 h-4 text-amber-400"></i>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Top Key Metrics Dashboard -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 no-print">
+      
+      <!-- Card 1: Total Land Recorded -->
+      <div class="glass-card rounded-2xl p-4 border border-slate-800 shadow-sm relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase text-slate-400 tracking-wider" data-en="Total Land Owned" data-kn="ಒಟ್ಟು ಜಮೀನು">ಒಟ್ಟು ಜಮೀನು</span>
+          <span class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
+            <i data-lucide="map" class="w-4 h-4"></i>
+          </span>
+        </div>
+        <div class="mt-2 flex items-baseline space-x-1">
+          <span id="metricTotalAcresGuntas" class="text-2xl font-black text-white font-mono">25-35</span>
+          <span class="text-xs text-emerald-400 font-semibold" data-en="Acres-Guntas" data-kn="ಎಕರೆ-ಗುಂಟೆ">ಎಕರೆ-ಗುಂಟೆ</span>
+        </div>
+        <p id="metricTotalSqFt" class="text-xs text-slate-400 mt-1 font-mono">1,127,115 Sq. Ft</p>
+      </div>
+
+      <!-- Card 2: Remaining After Sales -->
+      <div class="glass-card rounded-2xl p-4 border border-slate-800 shadow-sm relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase text-slate-400 tracking-wider" data-en="Net Remaining" data-kn="ಬಾಕಿ ಉಳಿದ ಜಮೀನು">ಬಾಕಿ ಉಳಿದ ಜಮೀನು</span>
+          <span class="p-2 rounded-lg bg-blue-500/10 text-blue-400">
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
+          </span>
+        </div>
+        <div class="mt-2 flex items-baseline space-x-1">
+          <span id="metricNetAcresGuntas" class="text-2xl font-black text-white font-mono">23-35</span>
+          <span class="text-xs text-blue-400 font-semibold" data-en="Acres-Guntas" data-kn="ಎಕರೆ-ಗುಂಟೆ">ಎಕರೆ-ಗುಂಟೆ</span>
+        </div>
+        <p id="metricSoldDeduction" class="text-xs text-amber-400 mt-1 font-medium" data-en="2-00 Sold Deducted" data-kn="2-00 ಮಾರಾಟ ಕಡಿತ">2-00 ಮಾರಾಟ ಕಡಿತ</p>
+      </div>
+
+      <!-- Card 3: Total Parcels / Survey Nos -->
+      <div class="glass-card rounded-2xl p-4 border border-slate-800 shadow-sm relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase text-slate-400 tracking-wider" data-en="Active Parcels" data-kn="ದಾಖಲಾದ ಸರ್ವೇ ನಂ">ದಾಖಲಾದ ಸರ್ವೇ ನಂ</span>
+          <span class="p-2 rounded-lg bg-amber-500/10 text-amber-400">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+          </span>
+        </div>
+        <div class="mt-2 flex items-baseline space-x-1">
+          <span id="metricParcelCount" class="text-2xl font-black text-white font-mono">5</span>
+          <span class="text-xs text-slate-400 font-semibold" data-en="Survey Nos" data-kn="ಸರ್ವೇ ನಂಬರ್‌ಗಳು">ಸರ್ವೇ ನಂಬರ್‌ಗಳು</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-1" data-en="Bhoomi RTC Verified" data-kn="ಭೂಮಿ RTC ಪರಿಶೀಲಿತ">ಭೂಮಿ RTC ಪರಿಶೀಲಿತ</p>
+      </div>
+
+      <!-- Card 4: Family Members Shared -->
+      <div class="glass-card rounded-2xl p-4 border border-slate-800 shadow-sm relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase text-slate-400 tracking-wider" data-en="Partition Members" data-kn="ಪಾಲುದಾರ ಸದಸ್ಯರು">ಪಾಲುದಾರ ಸದಸ್ಯರು</span>
+          <span class="p-2 rounded-lg bg-purple-500/10 text-purple-400">
+            <i data-lucide="users" class="w-4 h-4"></i>
+          </span>
+        </div>
+        <div class="mt-2 flex items-baseline space-x-1">
+          <span id="metricMemberCount" class="text-2xl font-black text-white font-mono">3</span>
+          <span class="text-xs text-purple-400 font-semibold" data-en="Shareholders" data-kn="ಪಾಲುದಾರರು">ಪಾಲುದಾರರು</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-1" data-en="Equal Partition Ready" data-kn="ಸಮ ಪಾಲು ಹಂಚಿಕೆ ಸಿದ್ಧ">ಸಮ ಪಾಲು ಹಂಚಿಕೆ ಸಿದ್ಧ</p>
+      </div>
+
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex items-center space-x-2 border-b border-slate-800 pb-2 overflow-x-auto no-print">
+      <button onclick="switchTab('converter')" id="tab-converter" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold flex items-center space-x-2 transition bg-emerald-600 text-white shadow-lg shadow-emerald-600/20">
+        <i data-lucide="calculator" class="w-4 h-4"></i>
+        <span data-en="1. Live Unit Converter" data-kn="1. ಲೈವ್ ಯೂನಿಟ್ ಪರಿವರ್ತಕ">1. ಲೈವ್ ಯೂನಿಟ್ ಪರಿವರ್ತಕ</span>
+      </button>
+
+      <button onclick="switchTab('ledger')" id="tab-ledger" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 flex items-center space-x-2 transition">
+        <i data-lucide="layers" class="w-4 h-4"></i>
+        <span data-en="2. Survey Nos & RTC Ledger" data-kn="2. ಸರ್ವೇ ನಂಬರ್ ಪಹಣಿ ಪಟ್ಟಿ">2. ಸರ್ವೇ ನಂಬರ್ ಪಹಣಿ ಪಟ್ಟಿ</span>
+      </button>
+
+      <button onclick="switchTab('partition')" id="tab-partition" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 flex items-center space-x-2 transition">
+        <i data-lucide="pie-chart" class="w-4 h-4"></i>
+        <span data-en="3. Family Land Partition" data-kn="3. ಕುಟುಂಬದ ಜಮೀನಿನ ಪಾಲು ಹಂಚಿಕೆ">3. ಕುಟುಂಬದ ಜಮೀನಿನ ಪಾಲು ಹಂಚಿಕೆ</span>
+      </button>
+
+      <button onclick="switchTab('plot')" id="tab-plot" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 flex items-center space-x-2 transition">
+        <i data-lucide="compass" class="w-4 h-4"></i>
+        <span data-en="4. Irregular Plot Map" data-kn="4. ಜಮೀನಿನ ನಕ್ಷೆ ಲೆಕ್ಕ (4 ಬದಿ)">4. ಜಮೀನಿನ ನಕ್ಷೆ ಲೆಕ್ಕ (4 ಬದಿ)</span>
+      </button>
+
+      <button onclick="switchTab('report')" id="tab-report" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 flex items-center space-x-2 transition">
+        <i data-lucide="file-check-2" class="w-4 h-4"></i>
+        <span data-en="5. Official Final Report" data-kn="5. ಅಂತಿಮ ಅಧಿಕೃತ ವರದಿ">5. ಅಂತಿಮ ಅಧಿಕೃತ ವರದಿ</span>
+      </button>
+    </div>
+
+    <!-- TAB 1: LIVE UNIT CONVERTER -->
+    <div id="panel-converter" class="tab-panel space-y-6">
+      <div class="glass-card rounded-2xl p-6 border border-slate-800 space-y-6">
+        
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+              <span class="text-emerald-400 font-mono">⚡</span>
+              <span data-en="Real-Time Dynamic Land Area Converter" data-kn="ತತ್‌ಕ್ಷಣದ ಲೈವ್ ಜಮೀನಿನ ವಿಸ್ತೀರ್ಣ ಪರಿವರ್ತಕ">ತತ್‌ಕ್ಷಣದ ಲೈವ್ ಜಮೀನಿನ ವಿಸ್ತೀರ್ಣ ಪರಿವರ್ತಕ</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1" data-en="Type into ANY box — all other units calculate live instantly according to Karnataka Government Bhoomi standards (1 Acre = 40 Guntas = 43,560 Sq Ft)." data-kn="ಯಾವುದೇ ಬಾಕ್ಸ್‌ನಲ್ಲಿ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ — ಉಳಿದೆಲ್ಲಾ ಅಳತೆಗಳು ಕರ್ನಾಟಕ ಸರ್ಕಾರದ ಭೂಮಿ ನಿಯಮಾವಳಿಯಂತೆ (1 ಎಕರೆ = 40 ಗುಂಟೆ = 43,560 ಚ.ಅಡಿ) ಲೈವ್ ಆಗಿ ತಕ್ಷಣ ಲೆಕ್ಕವಾಗುತ್ತವೆ.">ಯಾವುದೇ ಬಾಕ್ಸ್‌ನಲ್ಲಿ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ — ಉಳಿದೆಲ್ಲಾ ಅಳತೆಗಳು ಕರ್ನಾಟಕ ಸರ್ಕಾರದ ಭೂಮಿ ನಿಯಮಾವಳಿಯಂತೆ (1 ಎಕರೆ = 40 ಗುಂಟೆ = 43,560 ಚ.ಅಡಿ) ಲೈವ್ ಆಗಿ ತಕ್ಷಣ ಲೆಕ್ಕವಾಗುತ್ತವೆ.</p>
+          </div>
+
+          <!-- Quick Presets -->
+          <div class="flex items-center flex-wrap gap-1.5">
+            <span class="text-xs text-slate-400 mr-1" data-en="Quick:" data-kn="ಕ್ಷಿಪ್ರ:">ಕ್ಷಿಪ್ರ:</span>
+            <button onclick="applyPreset(0, 1)" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-800 text-slate-300 hover:bg-emerald-600 hover:text-white transition">1 Gunta</button>
+            <button onclick="applyPreset(0, 2.5)" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-800 text-slate-300 hover:bg-emerald-600 hover:text-white transition">1 Cent</button>
+            <button onclick="applyPreset(1, 0)" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-800 text-slate-300 hover:bg-emerald-600 hover:text-white transition">1 Acre</button>
+            <button onclick="applyPreset(9, 12)" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-800 text-slate-300 hover:bg-emerald-600 hover:text-white transition">9-12 (Share)</button>
+            <button onclick="applyPreset(18, 24)" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-800 text-slate-300 hover:bg-emerald-600 hover:text-white transition">18-24 (Joint)</button>
+            <button onclick="applyPreset(25, 35)" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-800 text-slate-300 hover:bg-emerald-600 hover:text-white transition">25-35 (Total)</button>
+          </div>
+        </div>
+
+        <!-- Inputs Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          
+          <!-- Acres & Guntas Combined Card -->
+          <div class="lg:col-span-2 bg-gradient-to-br from-emerald-950/40 to-slate-900/60 p-4 rounded-xl border border-emerald-500/30 glow-accent space-y-3">
+            <label class="block text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center justify-between">
+              <span data-en="Acre - Gunta - Ana (Bhoomi Standard)" data-kn="ಎಕರೆ - ಗುಂಟೆ - ಆಣೆ (ಸರ್ಕಾರಿ ಪ್ರಮಾಣಿತ)">ಎಕರೆ - ಗುಂಟೆ - ಆಣೆ (ಸರ್ಕಾರಿ ಪ್ರಮಾಣಿತ)</span>
+              <span class="text-xs text-slate-400 font-mono">1 Acre = 40 Guntas</span>
+            </label>
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <span class="text-[10px] text-slate-400 font-semibold block mb-1" data-en="Acres" data-kn="ಎಕರೆ">ಎಕರೆ</span>
+                <input type="number" id="inp_acres" oninput="calculateFromAcresGuntas()" value="25" min="0" step="1" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xl font-bold font-mono text-white focus:border-emerald-500 focus:outline-none">
+              </div>
+              <div>
+                <span class="text-[10px] text-slate-400 font-semibold block mb-1" data-en="Guntas (0-39)" data-kn="ಗುಂಟೆ (0-39)">ಗುಂಟೆ (0-39)</span>
+                <input type="number" id="inp_guntas" oninput="calculateFromAcresGuntas()" value="35" min="0" max="39" step="1" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xl font-bold font-mono text-emerald-400 focus:border-emerald-500 focus:outline-none">
+              </div>
+              <div>
+                <span class="text-[10px] text-slate-400 font-semibold block mb-1" data-en="Anas (0-15)" data-kn="ಆಣೆ (0-15)">ಆಣೆ (0-15)</span>
+                <input type="number" id="inp_anas" oninput="calculateFromAcresGuntas()" value="0" min="0" max="15" step="1" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xl font-bold font-mono text-slate-300 focus:border-emerald-500 focus:outline-none">
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-xs text-slate-400 pt-1 font-mono">
+              <span>Total Guntas: <strong id="out_total_guntas" class="text-emerald-400">1,035.00</strong></span>
+              <span>Decimal Acres: <strong id="out_decimal_acres" class="text-white">25.875</strong></span>
+            </div>
+          </div>
+
+          <!-- Total Square Feet -->
+          <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300" data-en="Square Feet (Sq. Ft)" data-kn="ಚದರ ಅಡಿ (Sq. Ft)">ಚದರ ಅಡಿ (Sq. Ft)</label>
+            <input type="number" id="inp_sqft" oninput="calculateFromSqFt()" value="1127115" min="0" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-lg font-bold font-mono text-amber-400 focus:border-emerald-500 focus:outline-none">
+            <p class="text-[11px] text-slate-400 font-mono">1 Gunta = 1,089 Sq. Ft</p>
+          </div>
+
+          <!-- Cents (100 Cents = 1 Acre) -->
+          <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300" data-en="Cents" data-kn="ಸೆಂಟ್ಸ್ (Cents)">ಸೆಂಟ್ಸ್ (Cents)</label>
+            <input type="number" id="inp_cents" oninput="calculateFromCents()" value="2587.5" min="0" step="any" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-lg font-bold font-mono text-purple-400 focus:border-emerald-500 focus:outline-none">
+            <p class="text-[11px] text-slate-400 font-mono">1 Cent = 435.6 Sq. Ft = 0.4 Gunta</p>
+          </div>
+
+          <!-- Square Meters -->
+          <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300" data-en="Square Meters (Sq. M)" data-kn="ಚದರ ಮೀಟರ್ (Sq. M)">ಚದರ ಮೀಟರ್ (Sq. M)</label>
+            <input type="number" id="inp_sqm" oninput="calculateFromSqM()" value="104712.5" min="0" step="any" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-lg font-bold font-mono text-blue-400 focus:border-emerald-500 focus:outline-none">
+            <p class="text-[11px] text-slate-400 font-mono">1 Sq. M = 10.7639 Sq. Ft</p>
+          </div>
+
+          <!-- Square Yards / Gajam -->
+          <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300" data-en="Square Yards (Gajam)" data-kn="ಚದರ ಗಜ (ಗಜ)">ಚದರ ಗಜ (ಗಜ)</label>
+            <input type="number" id="inp_sqyards" oninput="calculateFromSqYards()" value="125235" min="0" step="any" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-lg font-bold font-mono text-teal-400 focus:border-emerald-500 focus:outline-none">
+            <p class="text-[11px] text-slate-400 font-mono">1 Gunta = 121 Sq. Yards</p>
+          </div>
+
+          <!-- Hectare -->
+          <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300" data-en="Hectare" data-kn="ಹೆಕ್ಟೇರ್ (Hectare)">ಹೆಕ್ಟೇರ್ (Hectare)</label>
+            <input type="number" id="inp_hectares" oninput="calculateFromHectares()" value="10.47" min="0" step="any" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-lg font-bold font-mono text-rose-400 focus:border-emerald-500 focus:outline-none">
+            <p class="text-[11px] text-slate-400 font-mono">1 Hectare = 2.471 Acres</p>
+          </div>
+
+          <!-- Bigha -->
+          <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300" data-en="Bigha (Standard)" data-kn="ಬೀಘಾ (Bigha)">ಬೀಘಾ (Bigha)</label>
+            <input type="number" id="inp_bigha" oninput="calculateFromBigha()" value="41.4" min="0" step="any" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-lg font-bold font-mono text-indigo-400 focus:border-emerald-500 focus:outline-none">
+            <p class="text-[11px] text-slate-400 font-mono">1 Bigha ~ 25 Guntas (0.625 Acre)</p>
+          </div>
+
+        </div>
+
+        <!-- Live Visual Conversion Bar -->
+        <div class="bg-slate-900/90 rounded-xl p-4 border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+              <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="text-sm font-bold text-white font-mono" id="liveFormulaSummary">
+                25 Acres 35 Guntas = 1,035 Guntas = 2,587.5 Cents = 1,127,115 Sq. Ft
+              </div>
+              <p class="text-xs text-slate-400" data-en="Government Bhoomi Conversion Verified" data-kn="ಸರ್ಕಾರಿ ಭೂಮಿ ಮಾನದಂಡದಂತೆ 100% ನಿಖರ ಲೆಕ್ಕ">ಸರ್ಕಾರಿ ಭೂಮಿ ಮಾನದಂಡದಂತೆ 100% ನಿಖರ ಲೆಕ್ಕ</p>
+            </div>
+          </div>
+
+          <button onclick="copyCurrentConversion()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center space-x-1.5 transition">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span data-en="Copy Breakdown" data-kn="ಲೆಕ್ಕಾಚಾರ ಪ್ರತಿಮಾಡಿ">ಲೆಕ್ಕಾಚಾರ ಪ್ರತಿಮಾಡಿ</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 2: MULTI-PARCEL & RTC LEDGER -->
+    <div id="panel-ledger" class="tab-panel hidden space-y-6">
+      
+      <!-- Add Parcel Form & Table -->
+      <div class="glass-card rounded-2xl p-6 border border-slate-800 space-y-6">
+        
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+              <i data-lucide="folder-kanban" class="w-5 h-5 text-emerald-400"></i>
+              <span data-en="Survey Numbers & RTC Land Parcels Ledger" data-kn="ಸರ್ವೇ ನಂಬರ್ & ಪಹಣಿ ಖಾತೆವಾರು ಜಮೀನಿನ ಪಟ್ಟಿ">ಸರ್ವೇ ನಂಬರ್ & ಪಹಣಿ ಖಾತೆವಾರು ಜಮೀನಿನ ಪಟ್ಟಿ</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1" data-en="Manage multiple survey numbers, joint lands, and individual parcels with live running totals." data-kn="ವೈಯಕ್ತಿಕ ಪಟ್ಟಿ, ಜಂಟಿ ಜಮೀನುಗಳು ಮತ್ತು ಮಾರಾಟ ಕಡಿತಗಳನ್ನು ಸರ್ವೇ ನಂಬರ್‌ವಾರು ಸುಲಭವಾಗಿ ನಿರ್ವಹಿಸಿ.">ವೈಯಕ್ತಿಕ ಪಟ್ಟಿ, ಜಂಟಿ ಜಮೀನುಗಳು ಮತ್ತು ಮಾರಾಟ ಕಡಿತಗಳನ್ನು ಸರ್ವೇ ನಂಬರ್‌ವಾರು ಸುಲಭವಾಗಿ ನಿರ್ವಹಿಸಿ.</p>
+          </div>
+
+          <button onclick="openAddParcelModal()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center space-x-2 transition shadow-lg shadow-emerald-600/20">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span data-en="Add Survey Parcel" data-kn="+ ಹೊಸ ಸರ್ವೇ ನಂ ಸೇರಿಸಿ">+ ಹೊಸ ಸರ್ವೇ ನಂ ಸೇರಿಸಿ</span>
+          </button>
+        </div>
+
+        <!-- Table of Parcels -->
+        <div class="overflow-x-auto rounded-xl border border-slate-800">
+          <table class="w-full text-left border-collapse text-sm">
+            <thead class="bg-slate-900/90 text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800">
+              <tr>
+                <th class="p-3.5">#</th>
+                <th class="p-3.5" data-en="Survey No / Hissa" data-kn="ಸರ್ವೇ ನಂ / ಹಿಸ್ಸಾ">ಸರ್ವೇ ನಂ / ಹಿಸ್ಸಾ</th>
+                <th class="p-3.5" data-en="Owner / Khatedar" data-kn="ಮಾಲೀಕರು / ಖಾತೆದಾರರು">ಮಾಲೀಕರು / ಖಾತೆದಾರರು</th>
+                <th class="p-3.5" data-en="Category" data-kn="ವಿಧ">ವಿಧ</th>
+                <th class="p-3.5 text-right" data-en="Area (Acres-Guntas)" data-kn="ವಿಸ್ತೀರ್ಣ (ಎಕರೆ-ಗುಂಟೆ)">ವಿಸ್ತೀರ್ಣ (ಎಕರೆ-ಗುಂಟೆ)</th>
+                <th class="p-3.5 text-right" data-en="Sq. Feet" data-kn="ಚದರ ಅಡಿ">ಚದರ ಅಡಿ</th>
+                <th class="p-3.5" data-en="Status" data-kn="ಸ್ಥಿತಿ">ಸ್ಥಿತಿ</th>
+                <th class="p-3.5 text-center no-print" data-en="Action" data-kn="ಕ್ರಮ">ಕ್ರಮ</th>
+              </tr>
+            </thead>
+            <tbody id="parcelsTableBody" class="divide-y divide-slate-800 font-mono text-slate-300">
+              <!-- Rendered dynamically -->
+            </tbody>
+            <tfoot class="bg-slate-900/90 font-bold text-white border-t-2 border-slate-700">
+              <tr>
+                <td colspan="4" class="p-4 text-right uppercase tracking-wider text-xs" data-en="Grand Total Recorded Land:" data-kn="ಒಟ್ಟು ದಾಖಲಾದ ಜಮೀನು:">ಒಟ್ಟು ದಾಖಲಾದ ಜಮೀನು:</td>
+                <td id="tfootTotalArea" class="p-4 text-right text-emerald-400 font-mono text-base">25-35</td>
+                <td id="tfootTotalSqFt" class="p-4 text-right text-amber-400 font-mono text-sm">1,127,115</td>
+                <td colspan="2" class="p-4 text-xs text-slate-400 font-sans" data-en="40 Guntas Rule Applied" data-kn="40 ಗುಂಟೆ ನಿಯಮದಂತೆ">40 ಗುಂಟೆ ನಿಯಮದಂತೆ</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 3: FAMILY LAND PARTITION & SHARE DIVIDER -->
+    <div id="panel-partition" class="tab-panel hidden space-y-6">
+      
+      <div class="glass-card rounded-2xl p-6 border border-slate-800 space-y-6">
+        
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+              <i data-lucide="scale" class="w-5 h-5 text-emerald-400"></i>
+              <span data-en="Family Land Partition & Share Distribution" data-kn="ಕುಟುಂಬದ ಜಮೀನಿನ ಪಾಲು & ಸಮ ಭಾಗ ಹಂಚಿಕೆ">ಕುಟುಂಬದ ಜಮೀನಿನ ಪಾಲು & ಸಮ ಭಾಗ ಹಂಚಿಕೆ</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1" data-en="Accurate division among brothers, parents, and joint owners with sold land deductions." data-kn="ಅಣ್ಣ-ತಮ್ಮಂದಿರ ಸಮ ಭಾಗಗಳು, ಹಿರಿಯರ ಪಾಲು ಹಾಗೂ ಮಾರಾಟ ಕಡಿತದ ಪಕ್ಕಾ ಲೆಕ್ಕಾಚಾರ.">ಅಣ್ಣ-ತಮ್ಮಂದಿರ ಸಮ ಭಾಗಗಳು, ಹಿರಿಯರ ಪಾಲು ಹಾಗೂ ಮಾರಾಟ ಕಡಿತದ ಪಕ್ಕಾ ಲೆಕ್ಕಾಚಾರ.</p>
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <button onclick="loadSamplePartition()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition" data-en="Load Family Data" data-kn="ಮಾದರಿ ಪಾಲು ಲೋಡ್ ಮಾಡಿ">ಮಾದರಿ ಪಾಲು ಲೋಡ್ ಮಾಡಿ</button>
+            <button onclick="openAddMemberModal()" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center space-x-2 transition shadow-lg shadow-purple-600/20">
+              <i data-lucide="user-plus" class="w-4 h-4"></i>
+              <span data-en="Add Member" data-kn="+ ಹೊಸ ಸದಸ್ಯರನ್ನು ಸೇರಿಸಿ">+ ಹೊಸ ಸದಸ್ಯರನ್ನು ಸೇರಿಸಿ</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Partition Base Land Selection -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1" data-en="Base Land for Partition" data-kn="ಪಾಲು ಮಾಡಲು ಆಯ್ದ ಜಮೀನು">ಪಾಲು ಮಾಡಲು ಆಯ್ದ ಜಮೀನು</label>
+            <select id="partitionBaseSource" onchange="handlePartitionBaseChange()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500">
+              <option value="total">Total Ledger Land (25-35 Acres)</option>
+              <option value="joint_18_24" selected>Shankarlingappa Joint Land (18-24 Acres)</option>
+              <option value="custom">Custom Entered Land</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1" data-en="Partition Acres & Guntas" data-kn="ಹಂಚಿಕೆಯ ಒಟ್ಟು ವಿಸ್ತೀರ್ಣ">ಹಂಚಿಕೆಯ ಒಟ್ಟು ವಿಸ್ತೀರ್ಣ</label>
+            <div class="flex items-center space-x-2">
+              <input type="number" id="partAcres" value="18" oninput="recalcPartition()" class="w-1/2 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono font-bold text-white">
+              <span class="text-xs text-slate-400 font-mono">Ac</span>
+              <input type="number" id="partGuntas" value="24" oninput="recalcPartition()" class="w-1/2 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono font-bold text-purple-400">
+              <span class="text-xs text-slate-400 font-mono">Gu</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1" data-en="Equal Split Shortcut" data-kn="ಸಮ ಭಾಗಗಳ ಶಾರ್ಟ್‌ಕಟ್">ಸಮ ಭಾಗಗಳ ಶಾರ್ಟ್‌ಕಟ್</label>
+            <div class="flex items-center space-x-1.5">
+              <button onclick="autoSplitEqual(2)" class="flex-1 py-2 bg-slate-800 hover:bg-purple-600 hover:text-white rounded-lg text-xs font-bold text-slate-300 transition">2 Shares (ಅರ್ಧಾರ್ಧ)</button>
+              <button onclick="autoSplitEqual(3)" class="flex-1 py-2 bg-slate-800 hover:bg-purple-600 hover:text-white rounded-lg text-xs font-bold text-slate-300 transition">3 Shares</button>
+              <button onclick="autoSplitEqual(4)" class="flex-1 py-2 bg-slate-800 hover:bg-purple-600 hover:text-white rounded-lg text-xs font-bold text-slate-300 transition">4 Shares</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Members Share List -->
+        <div id="membersPartitionContainer" class="space-y-4">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Partition Audit Summary Note -->
+        <div class="bg-gradient-to-r from-purple-950/40 via-slate-900 to-slate-900 p-4 rounded-xl border border-purple-500/20 flex items-start space-x-3">
+          <i data-lucide="info" class="w-5 h-5 text-purple-400 shrink-0 mt-0.5"></i>
+          <div class="text-xs space-y-1">
+            <span class="font-bold text-purple-300 block" data-en="Official Partition Note:" data-kn="ಅಧಿಕೃತ ಪಾಲು ಹಂಚಿಕೆಯ ಸಾರಾಂಶ:">ಅಧಿಕೃತ ಪಾಲು ಹಂಚಿಕೆಯ ಸಾರಾಂಶ:</span>
+            <p id="partitionAuditSummaryText" class="text-slate-300 leading-relaxed font-sans">
+              ಶಂಕ್ರಲಿಂಗಪ್ಪ ಅವರ ಹೆಸರಿನ ಒಟ್ಟು 18 ಎಕರೆ 24 ಗುಂಟೆ ಜಮೀನನ್ನು ಅಣ್ಣ ಶಂಕ್ರಲಿಂಗಪ್ಪ ಮತ್ತು ತಮ್ಮ ನರಸರೆಡ್ಡಿ ಇಬ್ಬರಿಗೂ ತಲಾ 9 ಎಕರೆ 12 ಗುಂಟೆಯಂತೆ ಸಮನಾಗಿ ಎರಡು ಭಾಗ ಮಾಡಲಾಗಿದೆ.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- TAB 4: IRREGULAR PLOT AREA CALCULATOR -->
+    <div id="panel-plot" class="tab-panel hidden space-y-6">
+      <div class="glass-card rounded-2xl p-6 border border-slate-800 space-y-6">
+        
+        <div class="border-b border-slate-800/80 pb-4">
+          <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+            <i data-lucide="shapes" class="w-5 h-5 text-amber-400"></i>
+            <span data-en="4-Sided Irregular Land Boundary Calculator" data-kn="ನಾಲ್ಕು ಬದಿಯ ಅಸಮತೋಲನ ಜಮೀನಿನ ನಕ್ಷೆ & ವಿಸ್ತೀರ್ಣ">ನಾಲ್ಕು ಬದಿಯ ಅಸಮತೋಲನ ಜಮೀನಿನ ನಕ್ಷೆ & ವಿಸ್ತೀರ್ಣ</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-1" data-en="Accurately calculate land area by entering North, South, East, and West side boundary lengths." data-kn="ಉತ್ತರ, ದಕ್ಷಿಣ, ಪೂರ್ವ, ಪಶ್ಚಿಮ 4 ಬದಿಗಳ ಅಳತೆಗಳನ್ನು ನಮೂದಿಸಿ ಜಮೀನಿನ ಪಕ್ಕಾ ವಿಸ್ತೀರ್ಣ ಪಡೆಯಿರಿ.">ಉತ್ತರ, ದಕ್ಷಿಣ, ಪೂರ್ವ, ಪಶ್ಚಿಮ 4 ಬದಿಗಳ ಅಳತೆಗಳನ್ನು ನಮೂದಿಸಿ ಜಮೀನಿನ ಪಕ್ಕಾ ವಿಸ್ತೀರ್ಣ ಪಡೆಯಿರಿ.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          
+          <!-- Inputs & Calculation -->
+          <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1" data-en="North Side (ಉತ್ತರ) - Feet" data-kn="ಉತ್ತರ ಬದಿ (North) - ಅಡಿ">ಉತ್ತರ ಬದಿ (North) - ಅಡಿ</label>
+                <input type="number" id="plot_n" value="330" oninput="recalcPlot()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 font-mono text-white text-base">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1" data-en="South Side (ದಕ್ಷಿಣ) - Feet" data-kn="ದಕ್ಷಿಣ ಬದಿ (South) - ಅಡಿ">ದಕ್ಷಿಣ ಬದಿ (South) - ಅಡಿ</label>
+                <input type="number" id="plot_s" value="330" oninput="recalcPlot()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 font-mono text-white text-base">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1" data-en="East Side (ಪೂರ್ವ) - Feet" data-kn="ಪೂರ್ವ ಬದಿ (East) - ಅಡಿ">ಪೂರ್ವ ಬದಿ (East) - ಅಡಿ</label>
+                <input type="number" id="plot_e" value="132" oninput="recalcPlot()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 font-mono text-white text-base">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1" data-en="West Side (ಪಶ್ಚಿಮ) - Feet" data-kn="ಪಶ್ಚಿಮ ಬದಿ (West) - ಅಡಿ">ಪಶ್ಚಿಮ ಬದಿ (West) - ಅಡಿ</label>
+                <input type="number" id="plot_w" value="132" oninput="recalcPlot()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 font-mono text-white text-base">
+              </div>
+            </div>
+
+            <!-- Calculated Results -->
+            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-slate-400 font-semibold" data-en="Total Calculated Area:" data-kn="ಒಟ್ಟು ಲೆಕ್ಕಿಸಲಾದ ವಿಸ್ತೀರ್ಣ:">ಒಟ್ಟು ಲೆಕ್ಕಿಸಲಾದ ವಿಸ್ತೀರ್ಣ:</span>
+                <span id="plotOutputAcresGuntas" class="text-xl font-bold font-mono text-emerald-400">1 Acre 00 Gunta</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-xs font-mono text-slate-300 pt-2 border-t border-slate-800">
+                <div>Square Feet: <strong id="plotOutputSqFt" class="text-amber-400">43,560</strong></div>
+                <div>Guntas: <strong id="plotOutputGuntas" class="text-white">40.0</strong></div>
+                <div>Cents: <strong id="plotOutputCents" class="text-purple-400">100.0</strong></div>
+                <div>Square Meters: <strong id="plotOutputSqM" class="text-blue-400">4,046.8</strong></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Dynamic SVG Canvas Preview -->
+          <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 flex flex-col items-center justify-center relative min-h-[280px]">
+            <span class="absolute top-3 left-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider" data-en="Dynamic Plot Shape Scaler" data-kn="ಲೈವ್ ನಕ್ಷೆ ಪ್ರಿವ್ಯೂ">ಲೈವ್ ನಕ್ಷೆ ಪ್ರಿವ್ಯೂ</span>
+            <svg id="plotSvg" viewBox="0 0 300 200" class="w-full max-w-[280px] h-[180px]">
+              <polygon id="plotPolygon" points="30,40 270,40 250,160 50,160" fill="rgba(16, 185, 129, 0.15)" stroke="#10b981" stroke-width="3" stroke-linejoin="round" />
+              <text x="150" y="30" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="monospace">North: <tspan id="svgNorthText">330 ft</tspan></text>
+              <text x="150" y="180" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="monospace">South: <tspan id="svgSouthText">330 ft</tspan></text>
+              <text x="25" y="105" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="monospace" transform="rotate(-90 25 105)">West: <tspan id="svgWestText">132 ft</tspan></text>
+              <text x="275" y="105" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="monospace" transform="rotate(90 275 105)">East: <tspan id="svgEastText">132 ft</tspan></text>
+            </svg>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 5: OFFICIAL FINAL REPORT & EXPORT -->
+    <div id="panel-report" class="tab-panel hidden space-y-6">
+      
+      <div class="glass-card rounded-2xl p-8 border border-slate-800 space-y-6">
+        
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-4 no-print">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+              <i data-lucide="badge-check" class="w-5 h-5 text-emerald-400"></i>
+              <span data-en="Official Land Partition & RTC Report" data-kn="ಅಧಿಕೃತ ಜಮೀನಿನ ಪಾಲು ಹಂಚಿಕೆ ವರದಿ ಪತ್ರ">ಅಧಿಕೃತ ಜಮೀನಿನ ಪಾಲು ಹಂಚಿಕೆ ವರದಿ ಪತ್ರ</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1" data-en="Print-ready formal report generated for legal, family, or official revenue documentation." data-kn="ಕಾನೂನಾತ್ಮಕ, ಕುಟುಂಬದ ಅಥವಾ ಕಂದಾಯ ದಾಖಲೆಗಳಿಗಾಗಿ ಸಿದ್ಧಪಡಿಸಲಾದ ಅಂತಿಮ ವರದಿ.">ಕಾನೂನಾತ್ಮಕ, ಕುಟುಂಬದ ಅಥವಾ ಕಂದಾಯ ದಾಖಲೆಗಳಿಗಾಗಿ ಸಿದ್ಧಪಡಿಸಲಾದ ಅಂತಿಮ ವರದಿ.</p>
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center space-x-2 transition shadow-lg shadow-blue-600/20">
+              <i data-lucide="printer" class="w-4 h-4"></i>
+              <span data-en="Print / Save as PDF" data-kn="ಮುದ್ರಣ / PDF ಸೇವ್">ಮುದ್ರಣ / PDF ಸೇವ್</span>
+            </button>
+            <button onclick="exportToCSV()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition">
+              <span data-en="Export CSV" data-kn="CSV ಡೌನ್‌ಲೋಡ್">CSV ಡೌನ್‌ಲೋಡ್</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Formal Printable Certificate -->
+        <div id="printableCertificate" class="bg-slate-900/90 rounded-xl p-8 border border-slate-800 space-y-6 text-slate-200">
+          
+          <div class="text-center space-y-1.5 border-b border-slate-800 pb-6">
+            <h1 class="text-2xl font-black text-white uppercase tracking-wide" data-en="LAND AREA RECORD & PARTITION STATEMENT" data-kn="ಜಮೀನಿನ ವಿಸ್ತೀರ್ಣ ಹಾಗೂ ಕುಟುಂಬದ ಪಾಲು ಹಂಚಿಕೆಯ ಅಧಿಕೃತ ವರದಿ">ಜಮೀನಿನ ವಿಸ್ತೀರ್ಣ ಹಾಗೂ ಕುಟುಂಬದ ಪಾಲು ಹಂಚಿಕೆಯ ಅಧಿಕೃತ ವರದಿ</h1>
+            <p class="text-xs text-emerald-400 font-semibold" data-en="Karnataka State Bhoomi RTC Revenue Standards (1 Acre = 40 Guntas)" data-kn="ಕರ್ನಾಟಕ ರಾಜ್ಯ ಸರ್ಕಾರಿ ಭೂಮಿ ಪಹಣಿ ಪ್ರಮಾಣಿತ ಲೆಕ್ಕಾಚಾರ (1 ಎಕರೆ = 40 ಗುಂಟೆ)">ಕರ್ನಾಟಕ ರಾಜ್ಯ ಸರ್ಕಾರಿ ಭೂಮಿ ಪಹಣಿ ಪ್ರಮಾಣಿತ ಲೆಕ್ಕಾಚಾರ (1 ಎಕರೆ = 40 ಗುಂಟೆ)</p>
+            <p class="text-xs text-slate-400 font-mono" id="reportGeneratedDate">Date: 2026-09-20</p>
+          </div>
+
+          <!-- Summary Highlights -->
+          <div class="grid grid-cols-3 gap-4 text-center bg-slate-950/80 p-4 rounded-xl border border-slate-800">
+            <div>
+              <span class="text-xs text-slate-400 block font-semibold" data-en="Total Recorded Land" data-kn="ಒಟ್ಟು ದಾಖಲಾದ ಜಮೀನು">ಒಟ್ಟು ದಾಖಲಾದ ಜಮೀನು</span>
+              <span id="repTotalLand" class="text-lg font-bold text-white font-mono">25 ಎಕರೆ 35 ಗುಂಟೆ</span>
+            </div>
+            <div>
+              <span class="text-xs text-slate-400 block font-semibold" data-en="Sold Land Deducted" data-kn="ಮಾರಾಟವಾದ ಜಮೀನು">ಮಾರಾಟವಾದ ಜಮೀನು</span>
+              <span id="repSoldLand" class="text-lg font-bold text-amber-400 font-mono">2 ಎಕರೆ 00 ಗುಂಟೆ</span>
+            </div>
+            <div>
+              <span class="text-xs text-slate-400 block font-semibold" data-en="Net Balance Land" data-kn="ನಿವ್ವಳ ಉಳಿಕೆ ಜಮೀನು">ನಿವ್ವಳ ಉಳಿಕೆ ಜಮೀನು</span>
+              <span id="repNetLand" class="text-lg font-bold text-emerald-400 font-mono">23 ಎಕರೆ 35 ಗುಂಟೆ</span>
+            </div>
+          </div>
+
+          <!-- Section 1: Final Member Shares -->
+          <div class="space-y-3">
+            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-2 border-b border-slate-800 pb-2">
+              <span class="text-emerald-400 font-mono">1.</span>
+              <span data-en="Family Members Final Land Shares" data-kn="ಕುಟುಂಬದ ಸದಸ್ಯರ ಅಂತಿಮ ಜಮೀನಿನ ಪಾಲು ವಿವರ">ಕುಟುಂಬದ ಸದಸ್ಯರ ಅಂತಿಮ ಜಮೀನಿನ ಪಾಲು ವಿವರ</span>
+            </h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border border-slate-800">
+                <thead class="bg-slate-950 font-bold uppercase text-slate-400">
+                  <tr>
+                    <th class="p-2.5">#</th>
+                    <th class="p-2.5" data-en="Member Name" data-kn="ಸದಸ್ಯರ ಹೆಸರು">ಸದಸ್ಯರ ಹೆಸರು</th>
+                    <th class="p-2.5" data-en="Relationship" data-kn="ಸಂಬಂಧ">ಸಂಬಂಧ</th>
+                    <th class="p-2.5 text-right" data-en="Final Land Share" data-kn="ಅಂತಿಮ ಜಮೀನಿನ ಪಾಲು">ಅಂತಿಮ ಜಮೀನಿನ ಪಾಲು</th>
+                    <th class="p-2.5 text-right" data-en="Square Feet" data-kn="ಚದರ ಅಡಿ">ಚದರ ಅಡಿ</th>
+                    <th class="p-2.5" data-en="Status" data-kn="ಸ್ಥಿತಿ">ಸ್ಥಿತಿ</th>
+                  </tr>
+                </thead>
+                <tbody id="reportMembersTableBody" class="divide-y divide-slate-800 font-mono">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Signatures Section -->
+          <div class="pt-12 grid grid-cols-3 gap-8 text-center text-xs text-slate-400">
+            <div class="space-y-12">
+              <div class="border-t border-slate-700 w-3/4 mx-auto"></div>
+              <p data-en="Signature of Land Owner" data-kn="ಖಾತೆದಾರರ ಸಹಿ">ಖಾತೆದಾರರ ಸಹಿ</p>
+            </div>
+            <div class="space-y-12">
+              <div class="border-t border-slate-700 w-3/4 mx-auto"></div>
+              <p data-en="Witness 1 (ಸಾಕ್ಷಿ 1)" data-kn="ಸಾಕ್ಷಿ 1">ಸಾಕ್ಷಿ 1</p>
+            </div>
+            <div class="space-y-12">
+              <div class="border-t border-slate-700 w-3/4 mx-auto"></div>
+              <p data-en="Witness 2 / Village Elder" data-kn="ಸಾಕ್ಷಿ 2 / ಗ್ರಾಮದ ಪ್ರಮುಖರು">ಸಾಕ್ಷಿ 2 / ಗ್ರಾಮದ ಪ್ರಮುಖರು</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- MODAL: Add / Edit Parcel -->
+  <div id="parcelModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-white text-base" data-en="Add Survey Parcel" data-kn="ಹೊಸ ಸರ್ವೇ ನಂ ದಾಖಲಿಸಿ">ಹೊಸ ಸರ್ವೇ ನಂ ದಾಖಲಿಸಿ</h3>
+        <button onclick="closeAddParcelModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 font-semibold mb-1" data-en="Survey Number / Hissa" data-kn="ಸರ್ವೇ ನಂಬರ್ / ಹಿಸ್ಸಾ">ಸರ್ವೇ ನಂಬರ್ / ಹಿಸ್ಸಾ</label>
+          <input type="text" id="modal_survey_no" placeholder="e.g. 444, 112/1" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
+        </div>
+        <div>
+          <label class="block text-slate-400 font-semibold mb-1" data-en="Owner / Khatedar Name" data-kn="ಖಾತೆದಾರರ ಹೆಸರು">ಖಾತೆದಾರರ ಹೆಸರು</label>
+          <input type="text" id="modal_owner_name" placeholder="e.g. ಶಂಕ್ರಲಿಂಗಪ್ಪ, ಮಲ್ಲಮ್ಮ" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
+        </div>
+        <div>
+          <label class="block text-slate-400 font-semibold mb-1" data-en="Land Category" data-kn="ಜಮೀನಿನ ವಿಧ">ಜಮೀನಿನ ವಿಧ</label>
+          <select id="modal_category" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
+            <option value="Dry (ಖುಷ್ಕಿ)">Dry (ಖುಷ್ಕಿ)</option>
+            <option value="Wet (ತರಿ)">Wet (ತರಿ)</option>
+            <option value="Garden (ಬಾಗಾಯ್ತು)">Garden (ಬಾಗಾಯ್ತು)</option>
+            <option value="Residential (ನಿವೇಶನ)">Residential (ನಿವೇಶನ)</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 font-semibold mb-1" data-en="Acres" data-kn="ಎಕರೆ">ಎಕರೆ</label>
+            <input type="number" id="modal_acres" value="1" min="0" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white font-mono">
+          </div>
+          <div>
+            <label class="block text-slate-400 font-semibold mb-1" data-en="Guntas (0-39)" data-kn="ಗುಂಟೆ (0-39)">ಗುಂಟೆ (0-39)</label>
+            <input type="number" id="modal_guntas" value="0" min="0" max="39" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white font-mono">
+          </div>
+        </div>
+        <div>
+          <label class="block text-slate-400 font-semibold mb-1" data-en="Ownership / Status" data-kn="ಸ್ಥಿತಿ">ಸ್ಥಿತಿ</label>
+          <select id="modal_status" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
+            <option value="Joint (ಜಂಟಿ)">Joint (ಜಂಟಿ)</option>
+            <option value="Individual (ವೈಯಕ್ತಿಕ)">Individual (ವೈಯಕ್ತಿಕ)</option>
+            <option value="Sold (ಮಾರಾಟ)">Sold (ಮಾರಾಟ)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-800">
+        <button onclick="closeAddParcelModal()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">Cancel</button>
+        <button onclick="saveNewParcel()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">Save Parcel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION LOGIC IN PURE JAVASCRIPT -->
+  <script>
+    // State
+    let currentLang = 'kn'; // 'kn' or 'en'
+    let isDarkMode = true;
+
+    // Initial Data based on user's exact Bhoomi records
+    let parcels = [
+      { id: 1, survey: "444", owner: "ಶಂಕ್ರಲಿಂಗಪ್ಪ & ನರಸರೆಡ್ಡಿ (ಜಂಟಿ)", category: "Dry (ಖುಷ್ಕಿ)", acres: 6, guntas: 9, status: "Joint (ಜಂಟಿ)" },
+      { id: 2, survey: "128/1", owner: "ಶಂಕ್ರಲಿಂಗಪ್ಪ (ವೈಯಕ್ತಿಕ)", category: "Dry (ಖುಷ್ಕಿ)", acres: 12, guntas: 15, status: "Individual (ವೈಯಕ್ತಿಕ)" },
+      { id: 3, survey: "205", owner: "ಮಲ್ಲಮ್ಮ (ಒಟ್ಟು 9 ಎಕರೆ)", category: "Garden (ಬಾಗಾಯ್ತು)", acres: 7, guntas: 8, status: "Individual (2 ಎಕರೆ ಮಾರಾಟದ ನಂತರ ಉಳಿಕೆ)" },
+      { id: 4, survey: "205/B", owner: "ಮಲ್ಲಮ್ಮ (ಮಾರಾಟವಾದ ಪಾಲು)", category: "Garden (ಬಾಗಾಯ್ತು)", acres: 2, guntas: 0, status: "Sold (ಮಾರಾಟ)" },
+      { id: 5, survey: "310", owner: "ರಾಘವರೆಡ್ಡಿ", category: "Dry (ಖುಷ್ಕಿ)", acres: 0, guntas: 8, status: "Individual (ವೈಯಕ್ತಿಕ)" }
+    ];
+
+    let partitionMembers = [
+      { id: 1, name: "ಶಂಕ್ರಲಿಂಗಪ್ಪ ತಂ. ಗೋಪಿರೆಡ್ಡಿ", relation: "Elder Brother (ಅಣ್ಣ)", sharePercent: 50, shareAcres: 9, shareGuntas: 12, status: "Full Share (ಸಮ ಪಾಲು)" },
+      { id: 2, name: "ನರಸರೆಡ್ಡಿ ತಂ. ಗೋಪಿರೆಡ್ಡಿ", relation: "Younger Brother (ತಮ್ಮ)", sharePercent: 50, shareAcres: 9, shareGuntas: 12, status: "Full Share (ಸಮ ಪಾಲು)" },
+      { id: 3, name: "ರಾಘವರೆಡ್ಡಿ & ಕುಟುಂಬ", relation: "Family Branch (ಪ್ರತ್ಯೇಕ)", sharePercent: 0, shareAcres: 7, shareGuntas: 8, status: "Separate Share (ಪ್ರತ್ಯೇಕ)" }
+    ];
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      updateDashboardMetrics();
+      renderParcelsTable();
+      renderPartitionMembers();
+      renderReport();
+      calculateFromAcresGuntas();
+      recalcPlot();
+      document.getElementById('reportGeneratedDate').textContent = 'Date: ' + new Date().toISOString().split('T')[0];
+    });
+
+    // 1. DYNAMIC UNIT CONVERSION FUNCTIONS
+    function calculateFromAcresGuntas() {
+      const ac = parseFloat(document.getElementById('inp_acres').value) || 0;
+      const gu = parseFloat(document.getElementById('inp_guntas').value) || 0;
+      const an = parseFloat(document.getElementById('inp_anas').value) || 0;
+
+      const totalGuntas = (ac * 40) + gu + (an / 16);
+      const totalSqFt = totalGuntas * 1089;
+      syncAllUnitsFromSqFt(totalSqFt, 'acres_guntas');
+    }
+
+    function calculateFromSqFt() {
+      const sqft = parseFloat(document.getElementById('inp_sqft').value) || 0;
+      syncAllUnitsFromSqFt(sqft, 'sqft');
+    }
+
+    function calculateFromCents() {
+      const cents = parseFloat(document.getElementById('inp_cents').value) || 0;
+      const sqft = cents * 435.6;
+      syncAllUnitsFromSqFt(sqft, 'cents');
+    }
+
+    function calculateFromSqM() {
+      const sqm = parseFloat(document.getElementById('inp_sqm').value) || 0;
+      const sqft = sqm * 10.76391;
+      syncAllUnitsFromSqFt(sqft, 'sqm');
+    }
+
+    function calculateFromSqYards() {
+      const sqy = parseFloat(document.getElementById('inp_sqyards').value) || 0;
+      const sqft = sqy * 9;
+      syncAllUnitsFromSqFt(sqft, 'sqyards');
+    }
+
+    function calculateFromHectares() {
+      const hec = parseFloat(document.getElementById('inp_hectares').value) || 0;
+      const sqft = hec * 107639.1;
+      syncAllUnitsFromSqFt(sqft, 'hectares');
+    }
+
+    function calculateFromBigha() {
+      const bigha = parseFloat(document.getElementById('inp_bigha').value) || 0;
+      const totalGuntas = bigha * 25;
+      const sqft = totalGuntas * 1089;
+      syncAllUnitsFromSqFt(sqft, 'bigha');
+    }
+
+    function syncAllUnitsFromSqFt(sqft, source) {
+      const totalGuntas = sqft / 1089;
+      const decimalAcres = sqft / 43560;
+      const cents = sqft / 435.6;
+      const sqm = sqft / 10.76391;
+      const sqy = sqft / 9;
+      const hectares = sqft / 107639.1;
+      const bigha = totalGuntas / 25;
+
+      const fullAcres = Math.floor(totalGuntas / 40);
+      const remGuntas = Math.floor(totalGuntas % 40);
+      const remAnas = Math.round((totalGuntas - Math.floor(totalGuntas)) * 16);
+
+      // Update input fields unless it was the source
+      if (source !== 'acres_guntas') {
+        document.getElementById('inp_acres').value = fullAcres;
+        document.getElementById('inp_guntas').value = remGuntas;
+        document.getElementById('inp_anas').value = remAnas;
+      }
+      if (source !== 'sqft') document.getElementById('inp_sqft').value = Math.round(sqft * 100) / 100;
+      if (source !== 'cents') document.getElementById('inp_cents').value = Math.round(cents * 100) / 100;
+      if (source !== 'sqm') document.getElementById('inp_sqm').value = Math.round(sqm * 100) / 100;
+      if (source !== 'sqyards') document.getElementById('inp_sqyards').value = Math.round(sqy * 100) / 100;
+      if (source !== 'hectares') document.getElementById('inp_hectares').value = Math.round(hectares * 1000) / 1000;
+      if (source !== 'bigha') document.getElementById('inp_bigha').value = Math.round(bigha * 100) / 100;
+
+      // Update Live stats
+      document.getElementById('out_total_guntas').textContent = (Math.round(totalGuntas * 100) / 100).toLocaleString();
+      document.getElementById('out_decimal_acres').textContent = (Math.round(decimalAcres * 10000) / 10000).toLocaleString();
+
+      const summaryStr = `${fullAcres} Acres ${remGuntas} Guntas = ${(Math.round(totalGuntas*100)/100).toLocaleString()} Guntas = ${(Math.round(cents*10)/10).toLocaleString()} Cents = ${Math.round(sqft).toLocaleString()} Sq. Ft`;
+      document.getElementById('liveFormulaSummary').textContent = summaryStr;
+    }
+
+    function applyPreset(ac, gu) {
+      document.getElementById('inp_acres').value = ac;
+      document.getElementById('inp_guntas').value = gu;
+      document.getElementById('inp_anas').value = 0;
+      calculateFromAcresGuntas();
+    }
+
+    // 2. PARCELS LEDGER
+    function renderParcelsTable() {
+      const tbody = document.getElementById('parcelsTableBody');
+      tbody.innerHTML = '';
+
+      let totalGuntas = 0;
+
+      parcels.forEach((p, idx) => {
+        const pGuntas = (p.acres * 40) + p.guntas;
+        totalGuntas += pGuntas;
+        const pSqFt = pGuntas * 1089;
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-850/50 transition";
+        tr.innerHTML = `
+          <td class="p-3.5 text-slate-500">${idx + 1}</td>
+          <td class="p-3.5 font-bold text-white">${p.survey}</td>
+          <td class="p-3.5 font-sans">${p.owner}</td>
+          <td class="p-3.5 text-slate-400 font-sans">${p.category}</td>
+          <td class="p-3.5 text-right font-bold text-emerald-400">${p.acres} Ac - ${String(p.guntas).padStart(2, '0')} Gu</td>
+          <td class="p-3.5 text-right text-slate-300">${pSqFt.toLocaleString()}</td>
+          <td class="p-3.5">
+            <span class="px-2.5 py-1 text-xs font-semibold rounded-full ${p.status.includes('Sold') ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : p.status.includes('Joint') ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}">
+              ${p.status}
+            </span>
+          </td>
+          <td class="p-3.5 text-center no-print">
+            <button onclick="deleteParcel(${p.id})" class="p-1.5 text-slate-500 hover:text-rose-400 transition" title="Delete">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const grandAcres = Math.floor(totalGuntas / 40);
+      const grandGuntas = totalGuntas % 40;
+      const grandSqFt = totalGuntas * 1089;
+
+      document.getElementById('tfootTotalArea').textContent = `${grandAcres} Ac - ${String(grandGuntas).padStart(2, '0')} Gu`;
+      document.getElementById('tfootTotalSqFt').textContent = grandSqFt.toLocaleString();
+
+      lucide.createIcons();
+    }
+
+    function openAddParcelModal() {
+      document.getElementById('parcelModal').classList.remove('hidden');
+    }
+
+    function closeAddParcelModal() {
+      document.getElementById('parcelModal').classList.add('hidden');
+    }
+
+    function saveNewParcel() {
+      const sNo = document.getElementById('modal_survey_no').value.trim() || 'New';
+      const oName = document.getElementById('modal_owner_name').value.trim() || 'Owner';
+      const cat = document.getElementById('modal_category').value;
+      const ac = parseInt(document.getElementById('modal_acres').value) || 0;
+      const gu = parseInt(document.getElementById('modal_guntas').value) || 0;
+      const stat = document.getElementById('modal_status').value;
+
+      parcels.push({
+        id: Date.now(),
+        survey: sNo,
+        owner: oName,
+        category: cat,
+        acres: ac,
+        guntas: gu,
+        status: stat
+      });
+
+      closeAddParcelModal();
+      renderParcelsTable();
+      updateDashboardMetrics();
+      renderReport();
+    }
+
+    function deleteParcel(id) {
+      parcels = parcels.filter(p => p.id !== id);
+      renderParcelsTable();
+      updateDashboardMetrics();
+      renderReport();
+    }
+
+    // 3. FAMILY PARTITION & DISTRIBUTION
+    function handlePartitionBaseChange() {
+      const mode = document.getElementById('partitionBaseSource').value;
+      if (mode === 'total') {
+        document.getElementById('partAcres').value = 25;
+        document.getElementById('partGuntas').value = 35;
+      } else if (mode === 'joint_18_24') {
+        document.getElementById('partAcres').value = 18;
+        document.getElementById('partGuntas').value = 24;
+      }
+      recalcPartition();
+    }
+
+    function autoSplitEqual(sharesCount) {
+      const ac = parseFloat(document.getElementById('partAcres').value) || 0;
+      const gu = parseFloat(document.getElementById('partGuntas').value) || 0;
+      const totalGuntas = (ac * 40) + gu;
+
+      const perShareGuntas = totalGuntas / sharesCount;
+      const shareAc = Math.floor(perShareGuntas / 40);
+      const shareGu = Math.floor(perShareGuntas % 40);
+
+      partitionMembers = [];
+      const names = [
+        { name: "ಶಂಕ್ರಲಿಂಗಪ್ಪ ತಂ. ಗೋಪಿರೆಡ್ಡಿ", rel: "Elder Brother (ಅಣ್ಣ)" },
+        { name: "ನರಸರೆಡ್ಡಿ ತಂ. ಗೋಪಿರೆಡ್ಡಿ", rel: "Younger Brother (ತಮ್ಮ)" },
+        { name: "ರಾಘವರೆಡ್ಡಿ / ಶಾಖೆ", rel: "Brother (ಸಹೋದರ)" },
+        { name: "ನಾಲ್ಕನೇ ಪಾಲುದಾರರು", rel: "Shareholder" }
+      ];
+
+      for (let i = 0; i < sharesCount; i++) {
+        partitionMembers.push({
+          id: i + 1,
+          name: names[i] ? names[i].name : `ಪಾಲುದಾರ ${i+1}`,
+          relation: names[i] ? names[i].rel : 'Family Member',
+          sharePercent: Math.round((100 / sharesCount) * 10) / 10,
+          shareAcres: shareAc,
+          shareGuntas: shareGu,
+          status: "Equal Share (ಸಮ ಪಾಲು)"
+        });
+      }
+
+      renderPartitionMembers();
+      renderReport();
+    }
+
+    function recalcPartition() {
+      renderPartitionMembers();
+      renderReport();
+    }
+
+    function renderPartitionMembers() {
+      const container = document.getElementById('membersPartitionContainer');
+      container.innerHTML = '';
+
+      const ac = parseFloat(document.getElementById('partAcres').value) || 0;
+      const gu = parseFloat(document.getElementById('partGuntas').value) || 0;
+      const totalPartGuntas = (ac * 40) + gu;
+
+      partitionMembers.forEach((m, idx) => {
+        const mGuntas = (m.shareAcres * 40) + m.shareGuntas;
+        const mSqFt = mGuntas * 1089;
+        const mCents = mGuntas * 2.5;
+
+        const card = document.createElement('div');
+        card.className = "bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-3";
+        card.innerHTML = `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-2">
+            <div class="flex items-center space-x-2">
+              <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-300 font-bold flex items-center justify-center text-xs">${idx + 1}</span>
+              <div>
+                <h4 class="font-bold text-white text-sm font-sans">${m.name}</h4>
+                <p class="text-xs text-slate-400 font-sans">${m.relation}</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3 text-right">
+              <div>
+                <span class="text-lg font-black text-emerald-400 font-mono">${m.shareAcres} Ac - ${String(m.shareGuntas).padStart(2, '0')} Gu</span>
+                <span class="text-xs text-slate-400 block font-mono">${mSqFt.toLocaleString()} Sq. Ft (${mCents} Cents)</span>
+              </div>
+              <button onclick="removePartitionMember(${m.id})" class="text-slate-500 hover:text-rose-400 p-1">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="space-y-1">
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono">
+              <span>Share Ratio</span>
+              <span>${m.sharePercent}%</span>
+            </div>
+            <div class="w-full h-2 rounded-full bg-slate-950 overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-purple-500 to-emerald-400 rounded-full" style="width: ${m.sharePercent}%"></div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      document.getElementById('partitionAuditSummaryText').textContent = 
+        `ಒಟ್ಟು ${ac} ಎಕರೆ ${gu} ಗುಂಟೆ ಜಮೀನನ್ನು ${partitionMembers.map(m => m.name + ' (' + m.shareAcres + ' ಎಕರೆ ' + m.shareGuntas + ' ಗುಂಟೆ)').join(', ')} ರಂತೆ ವಿತರಿಸಲಾಗಿದೆ.`;
+
+      lucide.createIcons();
+    }
+
+    function removePartitionMember(id) {
+      partitionMembers = partitionMembers.filter(m => m.id !== id);
+      renderPartitionMembers();
+      renderReport();
+    }
+
+    function loadSamplePartition() {
+      autoSplitEqual(2);
+    }
+
+    // 4. IRREGULAR PLOT MAP CALCULATOR
+    function recalcPlot() {
+      const n = parseFloat(document.getElementById('plot_n').value) || 0;
+      const s = parseFloat(document.getElementById('plot_s').value) || 0;
+      const e = parseFloat(document.getElementById('plot_e').value) || 0;
+      const w = parseFloat(document.getElementById('plot_w').value) || 0;
+
+      // Average measurement method standard across rural revenue taluks
+      const avgLength = (n + s) / 2;
+      const avgWidth = (e + w) / 2;
+      const sqft = avgLength * avgWidth;
+
+      const totalGuntas = sqft / 1089;
+      const acres = Math.floor(totalGuntas / 40);
+      const guntas = Math.round((totalGuntas % 40) * 100) / 100;
+      const cents = Math.round((sqft / 435.6) * 100) / 100;
+      const sqm = Math.round((sqft / 10.7639) * 10) / 10;
+
+      document.getElementById('plotOutputAcresGuntas').textContent = `${acres} Acre ${guntas} Gunta`;
+      document.getElementById('plotOutputSqFt').textContent = Math.round(sqft).toLocaleString();
+      document.getElementById('plotOutputGuntas').textContent = (Math.round(totalGuntas * 100) / 100).toLocaleString();
+      document.getElementById('plotOutputCents').textContent = cents.toLocaleString();
+      document.getElementById('plotOutputSqM').textContent = sqm.toLocaleString();
+
+      document.getElementById('svgNorthText').textContent = `${n} ft`;
+      document.getElementById('svgSouthText').textContent = `${s} ft`;
+      document.getElementById('svgEastText').textContent = `${e} ft`;
+      document.getElementById('svgWestText').textContent = `${w} ft`;
+    }
+
+    // 5. OFFICIAL REPORT COMPILATION
+    function renderReport() {
+      const tbody = document.getElementById('reportMembersTableBody');
+      tbody.innerHTML = '';
+
+      partitionMembers.forEach((m, idx) => {
+        const mGuntas = (m.shareAcres * 40) + m.shareGuntas;
+        const mSqFt = mGuntas * 1089;
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-950/60";
+        tr.innerHTML = `
+          <td class="p-2.5 text-slate-500">${idx + 1}</td>
+          <td class="p-2.5 font-bold text-white font-sans">${m.name}</td>
+          <td class="p-2.5 text-slate-300 font-sans">${m.relation}</td>
+          <td class="p-2.5 text-right font-bold text-emerald-400">${m.shareAcres} ಎಕರೆ ${String(m.shareGuntas).padStart(2, '0')} ಗುಂಟೆ</td>
+          <td class="p-2.5 text-right text-slate-300">${mSqFt.toLocaleString()}</td>
+          <td class="p-2.5 text-slate-400 font-sans">${m.status}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // 6. DASHBOARD & UI UTILS
+    function updateDashboardMetrics() {
+      let totalGuntas = 0;
+      let soldGuntas = 0;
+
+      parcels.forEach(p => {
+        const gu = (p.acres * 40) + p.guntas;
+        totalGuntas += gu;
+        if (p.status.includes('Sold')) soldGuntas += gu;
+      });
+
+      const netGuntas = totalGuntas - soldGuntas;
+
+      const tAc = Math.floor(totalGuntas / 40);
+      const tGu = totalGuntas % 40;
+      const tSqFt = totalGuntas * 1089;
+
+      const nAc = Math.floor(netGuntas / 40);
+      const nGu = netGuntas % 40;
+
+      document.getElementById('metricTotalAcresGuntas').textContent = `${tAc}-${String(tGu).padStart(2, '0')}`;
+      document.getElementById('metricTotalSqFt').textContent = `${tSqFt.toLocaleString()} Sq. Ft`;
+
+      document.getElementById('metricNetAcresGuntas').textContent = `${nAc}-${String(nGu).padStart(2, '0')}`;
+      document.getElementById('metricParcelCount').textContent = parcels.length;
+      document.getElementById('metricMemberCount').textContent = partitionMembers.length;
+
+      document.getElementById('repTotalLand').textContent = `${tAc} ಎಕರೆ ${tGu} ಗುಂಟೆ`;
+      document.getElementById('repSoldLand').textContent = `${Math.floor(soldGuntas/40)} ಎಕರೆ ${soldGuntas%40} ಗುಂಟೆ`;
+      document.getElementById('repNetLand').textContent = `${nAc} ಎಕರೆ ${nGu} ಗುಂಟೆ`;
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.className = "tab-btn px-4 py-2 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 flex items-center space-x-2 transition";
+      });
+
+      document.getElementById(`panel-${tabId}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tab-${tabId}`);
+      activeBtn.className = "tab-btn px-4 py-2 rounded-xl text-sm font-semibold flex items-center space-x-2 transition bg-emerald-600 text-white shadow-lg shadow-emerald-600/20";
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'kn' ? 'en' : 'kn';
+      document.getElementById('langText').textContent = currentLang === 'kn' ? 'English' : 'ಕನ್ನಡ';
+
+      document.querySelectorAll('[data-en]').forEach(el => {
+        el.textContent = currentLang === 'kn' ? el.getAttribute('data-kn') : el.getAttribute('data-en');
+      });
+    }
+
+    function toggleDarkMode() {
+      isDarkMode = !isDarkMode;
+      document.documentElement.classList.toggle('dark', isDarkMode);
+      document.documentElement.classList.toggle('light', !isDarkMode);
+    }
+
+    function copyCurrentConversion() {
+      const summary = document.getElementById('liveFormulaSummary').textContent;
+      navigator.clipboard.writeText(summary);
+      alert('Copied to clipboard!\n' + summary);
+    }
+
+    function shareToWhatsApp() {
+      const text = encodeURIComponent(
+        `🌾 *BHOOMI RTC & LAND PARTITION STATEMENT*\n\n` +
+        `• Total Land: 25 Acres 35 Guntas (1,127,115 Sq. Ft)\n` +
+        `• Sold Deducted: 2 Acres 00 Guntas\n` +
+        `• Net Remaining: 23 Acres 35 Guntas\n\n` +
+        `*Family Partition:*\n` +
+        `1. ಶಂಕ್ರಲಿಂಗಪ್ಪ: 9 Acres 12 Guntas\n` +
+        `2. ನರಸರೆಡ್ಡಿ: 9 Acres 12 Guntas\n` +
+        `3. ರಾಘವರೆಡ್ಡಿ ಶಾಖೆ: 7 Acres 08 Guntas\n\n` +
+        `Calculated via Bhoomi RTC Land Studio Pro.`
+      );
+      window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+    }
+
+    function exportToCSV() {
+      let csv = "ID,Survey No,Owner,Category,Acres,Guntas,Status\n";
+      parcels.forEach(p => {
+        csv += `${p.id},"${p.survey}","${p.owner}","${p.category}",${p.acres},${p.guntas},"${p.status}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', `Land_Records_${new Date().toISOString().split('T')[0]}.csv`);
+      a.click();
+    }
+  </script>
+</body>
+</html>
